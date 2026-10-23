@@ -1,0 +1,6 @@
+{
+  "name": "Chol va Dengiz — Zamonaviy Adabiy Platforma",
+  "description": "Ernest Xemingueyning 'Chol va dengiz' qissasi bo'yicha zamonaviy interaktiv loyiha, taqdimot slaydlari, tahliliy insho, AI prompt studiyasi va bilim testi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
