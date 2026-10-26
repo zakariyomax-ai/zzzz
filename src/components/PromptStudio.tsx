@@ -5,19 +5,15 @@ import {
   Sparkles, 
   Copy, 
   Check, 
-  Terminal, 
-  Layers, 
-  Wand2, 
-  Filter,
-  Image as ImageIcon,
-  Video,
-  FileCode,
-  Compass
+  Wand2,
+  Maximize2,
+  X
 } from 'lucide-react';
 
 export const PromptStudio: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [previewItem, setPreviewItem] = useState<PromptItem | null>(null);
 
   // Custom Prompt Builder state
   const [customStyle, setCustomStyle] = useState<string>('cinematic');
@@ -72,6 +68,9 @@ export const PromptStudio: React.FC = () => {
     setTimeout(() => setCustomCopied(false), 2000);
   };
 
+  const isVerticalPoster = (item: PromptItem) =>
+    item.category === 'poster' || item.category === 'cover';
+
   return (
     <section id="prompts" className="py-16 bg-[#070c18] border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
@@ -88,16 +87,16 @@ export const PromptStudio: React.FC = () => {
               AI Prompt Studiyasi & Vizual Konseptlar
             </h2>
             <p className="font-serif text-slate-400 text-base mt-2 max-w-2xl">
-              Foydalanuvchi so'rovi bo'yicha tayyorlangan fotorealistik, animatsion, 3D, minimalist va veb-dizayn promptlari to'plami.
+              Asar ruhiyatini aks ettiruvchi fotorealistik, animatsion, 3D, minimalist plakat va kitob muqovasi promptlari to'plami.
             </p>
           </div>
         </div>
 
-        {/* Category Tabs (Segmented Control conforming to constitution) */}
+        {/* Category Tabs */}
         <div className="flex items-center gap-1.5 p-1.5 bg-slate-900/90 border border-slate-800 rounded-xl overflow-x-auto mb-8 max-w-fit">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'all'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -107,7 +106,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('visual')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'visual'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -117,7 +116,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('video')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'video'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -127,7 +126,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('poster')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'poster'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -137,7 +136,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('3d')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === '3d'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -147,7 +146,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('cover')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'cover'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -157,7 +156,7 @@ export const PromptStudio: React.FC = () => {
           </button>
           <button
             onClick={() => setSelectedCategory('academic')}
-            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               selectedCategory === 'academic'
                 ? 'bg-amber-500 text-slate-950 font-semibold shadow-sm'
                 : 'text-slate-400 hover:text-white'
@@ -169,95 +168,122 @@ export const PromptStudio: React.FC = () => {
 
         {/* Prompt Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-[#0b1220] border border-slate-800 rounded-2xl overflow-hidden p-6 flex flex-col justify-between hover:border-slate-700 transition-all duration-300"
-            >
-              <div className="space-y-4">
-                
-                {/* Card Top Metadata Ribbon (Unboxed) */}
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-amber-400 font-semibold">{item.targetAI}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{item.aspectRatio}</span>
-                  </div>
+          {filteredItems.map((item) => {
+            const verticalPoster = isVerticalPoster(item);
+            return (
+              <div
+                key={item.id}
+                className="bg-[#0b1220] border border-slate-800 rounded-2xl overflow-hidden p-6 flex flex-col justify-between hover:border-slate-700 transition-all duration-300"
+              >
+                <div className="space-y-4">
                   
-                  <span className="text-[11px] font-mono text-slate-500 uppercase">
-                    ID: {item.id}
-                  </span>
-                </div>
-
-                {/* Title & Description */}
-                <div>
-                  <h3 className="font-display text-xl font-bold text-white">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm font-sans text-slate-300 mt-1 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-
-                {/* Preview Thumbnail if available */}
-                {item.sampleImage && (
-                  <div className="relative rounded-xl overflow-hidden aspect-16/9 bg-slate-950 border border-slate-800">
-                    <img
-                      src={item.sampleImage}
-                      alt={item.title}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-mono bg-black/70 text-amber-300 border border-white/10">
-                      Haqiqiy Namuna
+                  {/* Card Top Metadata Ribbon (Unboxed) */}
+                  <div className="flex items-center justify-between text-xs text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-amber-400 font-semibold">{item.targetAI}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{item.aspectRatio}</span>
                     </div>
                   </div>
-                )}
 
-                {/* Prompt Box */}
-                <div className="relative p-4 rounded-xl bg-slate-950 border border-slate-800/90 font-mono text-xs text-amber-200/90 leading-relaxed overflow-x-auto">
-                  <pre className="whitespace-pre-wrap font-mono select-all">
-                    {item.promptText}
-                  </pre>
-                </div>
+                  {/* Title & Description */}
+                  <div>
+                    <h3 className="font-display text-xl font-bold text-white">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm font-sans text-slate-300 mt-1 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
 
-                {/* Tags (Unboxed inline text) */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
-                  {item.tags.map((tag, tIdx) => (
-                    <span key={tIdx}>
-                      #{tag}{tIdx < item.tags.length - 1 ? ' · ' : ''}
-                    </span>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* Copy Action Button */}
-              <div className="pt-4 mt-4 border-t border-slate-800/80 flex justify-end">
-                <button
-                  onClick={() => handleCopyPrompt(item.id, item.promptText)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all border ${
-                    copiedId === item.id
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                      : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-slate-700'
-                  }`}
-                >
-                  {copiedId === item.id ? (
-                    <>
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      <span>Prompt Nusxalandi!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      <span>Promptni Nusxalash</span>
-                    </>
+                  {/* Preview Thumbnail if available — aspect-aware without awkward side bars */}
+                  {item.sampleImage && (
+                    <div
+                      onClick={() => setPreviewItem(item)}
+                      className="group relative rounded-xl overflow-hidden aspect-16/9 bg-[#070d18] border border-slate-800 cursor-pointer"
+                    >
+                      {verticalPoster ? (
+                        <>
+                          <img
+                            src={item.sampleImage}
+                            alt=""
+                            aria-hidden="true"
+                            referrerPolicy="no-referrer"
+                            className="absolute inset-0 w-full h-full object-cover object-[center_54%] scale-125 blur-xl opacity-35"
+                          />
+                          <div className="relative z-10 w-full h-full flex items-center justify-center py-2.5">
+                            <img
+                              src={item.sampleImage}
+                              alt={item.title}
+                              referrerPolicy="no-referrer"
+                              className="h-full w-auto object-contain rounded shadow-xl transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <img
+                          src={item.sampleImage}
+                          alt={item.title}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-sans text-slate-200 z-20 pointer-events-none">
+                        <span className="text-amber-300 font-medium">Haqiqiy Namuna</span>
+                        <span className="flex items-center gap-1 text-slate-300">
+                          <Maximize2 className="w-3 h-3" />
+                          <span>Kattalashtirish</span>
+                        </span>
+                      </div>
+                    </div>
                   )}
-                </button>
-              </div>
 
-            </div>
-          ))}
+                  {/* Prompt Box */}
+                  <div className="relative p-4 rounded-xl bg-slate-950 border border-slate-800/90 font-mono text-xs text-amber-200/90 leading-relaxed overflow-x-auto">
+                    <pre className="whitespace-pre-wrap font-mono select-all">
+                      {item.promptText}
+                    </pre>
+                  </div>
+
+                  {/* Tags (Unboxed inline text) */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                    {item.tags.map((tag, tIdx) => (
+                      <span key={tIdx}>
+                        #{tag}{tIdx < item.tags.length - 1 ? ' · ' : ''}
+                      </span>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* Copy Action Button */}
+                <div className="pt-4 mt-4 border-t border-slate-800/80 flex justify-end">
+                  <button
+                    onClick={() => handleCopyPrompt(item.id, item.promptText)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all border whitespace-nowrap shrink-0 ${
+                      copiedId === item.id
+                        ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                        : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-slate-700'
+                    }`}
+                  >
+                    {copiedId === item.id ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span>Prompt Nusxalandi!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>Promptni Nusxalash</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+              </div>
+            );
+          })}
         </div>
 
         {/* Interactive Custom AI Prompt Generator */}
@@ -334,7 +360,7 @@ export const PromptStudio: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={generateCustomPrompt}
-              className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs sm:text-sm cursor-pointer transition-colors shadow flex items-center gap-2"
+              className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-xs sm:text-sm cursor-pointer transition-colors shadow flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-4 h-4" />
               <span>Promptni Shakllantirish</span>
@@ -362,6 +388,50 @@ export const PromptStudio: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Lightbox Modal for Prompt Sample Artwork */}
+      {previewItem && previewItem.sampleImage && (
+        <div
+          onClick={() => setPreviewItem(null)}
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-5xl w-full rounded-2xl overflow-hidden border border-slate-700 bg-[#080e1b] shadow-2xl"
+          >
+            <button
+              onClick={() => setPreviewItem(null)}
+              className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 cursor-pointer"
+              aria-label="Yopish"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="max-h-[75vh] flex items-center justify-center bg-slate-950 p-2 sm:p-4">
+              <img
+                src={previewItem.sampleImage}
+                alt={previewItem.title}
+                referrerPolicy="no-referrer"
+                className="max-h-[70vh] w-auto object-contain rounded-lg"
+              />
+            </div>
+
+            <div className="px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div>
+                <h4 className="font-display text-base font-bold text-white">{previewItem.title}</h4>
+                <p className="text-slate-400 mt-0.5">{previewItem.targetAI} · {previewItem.aspectRatio}</p>
+              </div>
+              <button
+                onClick={() => handleCopyPrompt(previewItem.id, previewItem.promptText)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold cursor-pointer whitespace-nowrap shrink-0"
+              >
+                {copiedId === previewItem.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                <span>{copiedId === previewItem.id ? "Nusxalandi!" : "Promptni Nusxalash"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

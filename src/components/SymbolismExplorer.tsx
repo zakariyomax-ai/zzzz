@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { symbolismItems } from '../data/symbolismData';
 import { SymbolItem } from '../types';
-import { Sparkles, X, Quote, Layers, CheckCircle } from 'lucide-react';
+import { X, Quote, CheckCircle } from 'lucide-react';
 
 export const SymbolismExplorer: React.FC = () => {
   const [selectedSymbol, setSelectedSymbol] = useState<SymbolItem | null>(null);
+
+  const isPosterArtwork = (imagePath: string) => imagePath.includes('minimalist_poster_boat');
 
   return (
     <section id="symbolism" className="py-16 bg-[#090f1d] border-b border-slate-800">
@@ -27,61 +29,72 @@ export const SymbolismExplorer: React.FC = () => {
 
         {/* 6-Item Symbol Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {symbolismItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedSymbol(item)}
-              className="group bg-[#0c1424] border border-slate-800/90 hover:border-amber-500/50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
-            >
-              <div>
-                {/* Visual Image Header */}
-                <div className="relative aspect-16/10 overflow-hidden bg-slate-900">
-                  <img
-                    src={item.image}
-                    alt={item.uzbekTitle}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c1424] via-transparent to-transparent" />
-                  
-                  <span className="absolute top-3 right-3 text-[11px] font-mono uppercase bg-slate-950/80 border border-slate-700/80 px-2 py-0.5 rounded text-amber-300">
-                    {item.title}
-                  </span>
-                </div>
-
-                {/* Card Content */}
-                <div className="p-6 space-y-3">
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                      {item.uzbekTitle}
-                    </h3>
-                    <p className="text-xs font-sans text-amber-500/90 font-medium mt-1">
-                      {item.symbolism}
-                    </p>
+          {symbolismItems.map((item) => {
+            const posterCrop = isPosterArtwork(item.image);
+            return (
+              <div
+                key={item.id}
+                onClick={() => setSelectedSymbol(item)}
+                className="group bg-[#0c1424] border border-slate-800/90 hover:border-amber-500/50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+              >
+                <div>
+                  {/* Visual Image Header — seamless edge-to-edge framing */}
+                  <div className="relative aspect-16/10 overflow-hidden bg-[#070d18]">
+                    <img
+                      src={item.image}
+                      alt={item.uzbekTitle}
+                      referrerPolicy="no-referrer"
+                      className={`w-full h-full object-cover transition-transform duration-500 ${
+                        posterCrop
+                          ? 'object-[center_54%] scale-[1.12] group-hover:scale-[1.18]'
+                          : 'object-center group-hover:scale-105'
+                      }`}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c1424] via-transparent to-transparent" />
                   </div>
 
-                  <p className="text-sm font-serif text-slate-300 line-clamp-3 leading-relaxed">
-                    {item.description}
-                  </p>
+                  {/* Card Content */}
+                  <div className="p-6 space-y-3">
+                    <div>
+                      <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1">
+                        {item.title}
+                      </div>
+                      <h3 className="font-display text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
+                        {item.uzbekTitle}
+                      </h3>
+                      <p className="text-xs font-sans text-amber-400/90 font-medium mt-1">
+                        {item.symbolism}
+                      </p>
+                    </div>
+
+                    <p className="text-sm font-serif text-slate-300 line-clamp-3 leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card Footer */}
+                <div className="p-6 pt-3 border-t border-slate-800/60 mt-4 flex items-center justify-between text-xs text-slate-400">
+                  <span className="font-mono text-[11px]">Batafsil Tahlil</span>
+                  <span className="text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
+                    Ochish →
+                  </span>
                 </div>
               </div>
-
-              {/* Card Footer */}
-              <div className="p-6 pt-0 border-t border-slate-800/60 mt-4 flex items-center justify-between text-xs text-slate-400">
-                <span className="font-mono text-[11px]">Batafsil Tahlil</span>
-                <span className="text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
-                  Ochish →
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* In-depth Symbol Modal Dialog */}
         {selectedSymbol && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="relative bg-[#0d1627] border border-slate-700/90 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
-              
+          <div
+            onClick={() => setSelectedSymbol(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-[#0d1627] border border-slate-700/90 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto"
+            >
               <button
                 onClick={() => setSelectedSymbol(null)}
                 className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800/80 cursor-pointer transition-colors"
@@ -103,12 +116,14 @@ export const SymbolismExplorer: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="rounded-xl overflow-hidden border border-slate-700 aspect-16/9 bg-slate-900">
+                <div className="rounded-xl overflow-hidden border border-slate-700 aspect-16/9 bg-[#070d18]">
                   <img
                     src={selectedSymbol.image}
                     alt={selectedSymbol.uzbekTitle}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover ${
+                      isPosterArtwork(selectedSymbol.image) ? 'object-[center_54%] scale-[1.12]' : 'object-center'
+                    }`}
                   />
                 </div>
 

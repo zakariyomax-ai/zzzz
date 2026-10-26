@@ -1,5 +1,7 @@
 import React from 'react';
-import { BookOpen, ExternalLink, Download, FileText, CheckCircle2, Bookmark } from 'lucide-react';
+import { BookOpen, ExternalLink, Download, FileText, CheckCircle2 } from 'lucide-react';
+
+const POSTER_BOAT_IMG = '/assets/images/minimalist_poster_boat.jpg';
 
 interface BookShowcaseProps {
   onOpenModal: () => void;
@@ -33,9 +35,9 @@ export const BookShowcase: React.FC<BookShowcaseProps> = ({ onOpenModal }) => {
             
             {/* Left: Book Cover Visual */}
             <div className="lg:col-span-4 flex justify-center">
-              <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-700/80 max-w-[280px] w-full aspect-[3/4] bg-slate-900 group">
+              <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-700/80 max-w-[280px] w-full aspect-[3/4] bg-[#f4f1ea] group">
                 <img
-                  src="/src/assets/images/minimalist_poster_boat_1792402448773.jpg"
+                  src={POSTER_BOAT_IMG}
                   alt="Chol va dengiz kitob muqovasi"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
